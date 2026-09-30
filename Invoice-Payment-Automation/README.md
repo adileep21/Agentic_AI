@@ -59,6 +59,9 @@ The invoice records are maintained in Google Sheets with the following fields:
 The solution consists of two interconnected Zaps.
 
 ### Zap 1 – Automated Payment Request
+Identifies pending invoices and sends personalized payment request emails.
+
+[View Zap 1 – Payment Request Automation](https://zapier.com/templates/details/automate-payment-request-reminders-86dba6?secret=MTp0ZW1wbGF0ZTpja0FiQ2d6Q2Z5MFA0S1FsTVNZUkxzRENxa2puUFRLXzZXVURUUzBySFdROnVwMzJyNQ)
 
 Google Sheets  
 ↓  
@@ -71,6 +74,10 @@ Gmail Payment Request
 Recipient Receives Email
 
 ### Zap 2 – Automated Payment Confirmation
+Detects "Payment Done" replies, extracts the Invoice ID, and updates the
+corresponding invoice status in Google Sheets.
+
+[View Zap 2 – Payment Confirmation Automation](https://zapier.com/templates/details/update-invoice-from-payment-confirmation-85b7dc?secret=MTp0ZW1wbGF0ZTpZa0pQSHVZelJUWWdhT25pN0dtNlh1ek9BSG1sWV9QYkVmLTZMTmZUaWhZOmFzNGJ4OQ)
 
 Recipient Replies "Payment Done"  
 ↓  
@@ -112,14 +119,7 @@ business applications to reduce repetitive manual activities.
 
 ---
 
-# 8. Skills Demonstrated
+# 8. Zapier Links
 
-- Workflow Automation
-- Zapier Automation
-- API/Application Integration
-- Gmail Automation
-- Google Sheets Automation
-- Data Mapping
-- Conditional Workflow Design
-- Event-Based Automation
-- Process Automation
+- https://zapier.com/templates/details/automate-payment-request-reminders-86dba6?secret=MTp0ZW1wbGF0ZTpja0FiQ2d6Q2Z5MFA0S1FsTVNZUkxzRENxa2puUFRLXzZXVURUUzBySFdROnVwMzJyNQ
+- 
