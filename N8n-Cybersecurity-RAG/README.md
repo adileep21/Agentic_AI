@@ -109,7 +109,7 @@ The chatbot was tested using natural cybersecurity questions covering:
 
 ## Live Chat
 
-[Open Cybersecurity RAG Chatbot](PASTE_YOUR_N8N_CHAT_URL_HERE)
+[Open Cybersecurity RAG Chatbot](http://localhost:5678/webhook/f26bfa04-3d33-44e2-aaf7-9114e7ae5c8e/chat)
 
 > Note: The chatbot must be accessible through the published n8n instance for the live link to work.
 
@@ -117,7 +117,7 @@ The chatbot was tested using natural cybersecurity questions covering:
 
 The exported n8n workflow is available here:
 
-[Download n8n Workflow](workflow/Cybersecurity_RAG_Chatbot.json)
+[Download n8n Workflow](workflow/CyberOn.json)
 
 ## Key Features
 
