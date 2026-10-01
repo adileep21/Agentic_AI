@@ -1,0 +1,227 @@
+{
+  "name": "Multi Agent System",
+  "nodes": [
+    {
+      "parameters": {
+        "public": true,
+        "initialMessages": "Hi there! 👋\nMy name is Cyder. How can I assist you today?",
+        "options": {
+          "inputPlaceholder": "How can I help you today?",
+          "subtitle": "An agent which helps with cyber security related queries",
+          "title": "Multi Agent System"
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.chatTrigger",
+      "typeVersion": 1.5,
+      "position": [
+        -432,
+        -64
+      ],
+      "id": "5b12b4a9-50b2-46b9-bf83-2b0c58022c1b",
+      "name": "When chat message received",
+      "webhookId": "7edb5c1b-58f0-4b64-9425-9753c0ca036a"
+    },
+    {
+      "parameters": {
+        "options": {
+          "systemMessage": "You are a Threat Analysis Agent in a sequential cybersecurity multi-agent system.\n\nAnalyze the cybersecurity incident or problem provided in the input.\n\nYour task is to:\n1. Understand the incident or security problem.\n2. Identify the relevant threat(s).\n3. Identify possible attack vectors or exploitation methods.\n4. Identify vulnerabilities or weaknesses involved.\n5. Explain the likely security consequences.\n\nYou have access to the Tavily Search tool.\nUse Tavily Search only when current, external, or verifiable cybersecurity information is required.\nDo not perform unnecessary searches when the available information is sufficient. When analyzing cybersecurity incidents, use Tavily Search to verify current threat information, attack techniques, or relevant security advisories whenever applicable. For this workflow, use Tavily Search when external information can improve the threat analysis.\n\nProvide a structured and technically accurate threat analysis.\n\nYour output will be passed directly to the next Risk Analysis Agent. Therefore, focus only on threat analysis and do not provide the final response to the user."
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3.1,
+      "position": [
+        -240,
+        -64
+      ],
+      "id": "c4ceb38d-f99f-4d28-8607-b87b9303adc9",
+      "name": "Threat Analysis"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=Analyze the threat analysis produced by the previous agent.\n\nThreat Analysis:{{ $json.output }}\n\nBased on this analysis, identify the potential security impact, business and operational risks, and the key risks that should be prioritized.\n\nProvide a structured risk analysis.",
+        "options": {
+          "systemMessage": "You are a Risk Analysis Agent in a sequential cybersecurity multi-agent system.\n\nYou receive the threat analysis produced by the previous Threat Analysis Agent.\n\nYour task is to:\n1. Review the identified threats, vulnerabilities, and attack vectors.\n2. Determine the potential security impact.\n3. Identify business and operational risks.\n4. Assess the possible consequences for confidentiality, integrity, and availability.\n5. Identify the key risks that should be prioritized.\n6. Explain the reasoning behind the identified risks.\n\nYou have access to the Tavily Search tool.\nUse Tavily Search only when current, external, or verifiable cybersecurity information is required.\nDo not perform unnecessary searches when the available information is sufficient.\n\nProvide a structured and technically accurate risk analysis.\n\nYour output will be passed directly to the Response & Recommendations Agent. Do not provide the final response to the user."
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3.1,
+      "position": [
+        48,
+        -64
+      ],
+      "id": "dfe3c249-6500-4828-8f08-2d22e29f4f35",
+      "name": "Risk Analysis"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=Review the risk analysis produced by the previous agent.\n\nRisk Analysis:\n{{ $json.output }}\n\nBased on this analysis, provide:\n\n1. Immediate actions\n2. Recommended security controls\n3. Mitigation measures\n4. Preventive measures\n\nGive practical, prioritized recommendations that directly address the identified risks.\n\nDo not mention the internal multi-agent workflow. ",
+        "options": {
+          "systemMessage": "You are a Response and Recommendations Agent in a sequential cybersecurity multi-agent system.\n\nYou receive the risk analysis produced by the previous Risk Analysis Agent.\n\nYour task is to:\n1. Review the identified risks and their potential impact.\n2. Recommend practical mitigation actions.\n3. Recommend relevant cybersecurity controls.\n4. Suggest immediate incident response actions where applicable.\n5. Suggest preventive measures to reduce the likelihood of recurrence.\n6. Present the recommendations clearly, logically, and in a practical manner.\n\nYou have access to the Tavily Search tool.\nUse Tavily Search when current, external, or verifiable cybersecurity information is required, such as current security advisories, recommended controls, mitigation guidance, or recent cybersecurity practices.\nDo not perform unnecessary searches when the available information is sufficient.\n\nUse the threat and risk analysis provided by the previous agents as context.\n\nProduce the final response for the user.\nDo not mention the internal multi-agent workflow or refer to yourself as an agent."
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3.1,
+      "position": [
+        336,
+        -64
+      ],
+      "id": "487c6bfb-ff16-487e-bbd7-7f3a1aaf8e48",
+      "name": "Response & Recommendations"
+    },
+    {
+      "parameters": {
+        "model": "openai/gpt-oss-20b",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGroq",
+      "typeVersion": 1,
+      "position": [
+        -32,
+        192
+      ],
+      "id": "f11a9a76-f9ab-4280-9fa8-44998cbff127",
+      "name": "Groq Chat Model",
+      "credentials": {
+        "groqApi": {
+          "id": "btpdodMkaLZlIzGt",
+          "name": "Groq account"
+        }
+      }
+    },
+    {
+      "parameters": {},
+      "type": "@n8n/n8n-nodes-langchain.memoryBufferWindow",
+      "typeVersion": 1.4,
+      "position": [
+        432,
+        160
+      ],
+      "id": "dce4406c-2f91-4302-8498-ad7df9d0e631",
+      "name": "Simple Memory"
+    },
+    {
+      "parameters": {
+        "query": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Query', ``, 'string') }}",
+        "options": {}
+      },
+      "type": "@tavily/n8n-nodes-tavily.tavilyTool",
+      "typeVersion": 1,
+      "position": [
+        192,
+        192
+      ],
+      "id": "4dcc276d-a6d3-44b2-a437-9d552ec6ed1c",
+      "name": "Search in Tavily",
+      "credentials": {
+        "tavilyApi": {
+          "id": "hFcWBjqbPN3FG0qQ",
+          "name": "Tavily account 4"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "When chat message received": {
+      "main": [
+        [
+          {
+            "node": "Threat Analysis",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Threat Analysis": {
+      "main": [
+        [
+          {
+            "node": "Risk Analysis",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Risk Analysis": {
+      "main": [
+        [
+          {
+            "node": "Response & Recommendations",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Groq Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Threat Analysis",
+            "type": "ai_languageModel",
+            "index": 0
+          },
+          {
+            "node": "Risk Analysis",
+            "type": "ai_languageModel",
+            "index": 0
+          },
+          {
+            "node": "Response & Recommendations",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Simple Memory": {
+      "ai_memory": [
+        [
+          {
+            "node": "Response & Recommendations",
+            "type": "ai_memory",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Search in Tavily": {
+      "ai_tool": [
+        [
+          {
+            "node": "Threat Analysis",
+            "type": "ai_tool",
+            "index": 0
+          },
+          {
+            "node": "Risk Analysis",
+            "type": "ai_tool",
+            "index": 0
+          },
+          {
+            "node": "Response & Recommendations",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate"
+  },
+  "versionId": "d619599c-5da7-4263-a570-ce9eb1de3d5a",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "49363d16f9c2e5ced96e9a621b557a586dae2838f89a20889749dad9430d82c8"
+  },
+  "nodeGroups": [],
+  "id": "lPkm5FHmJ8R2NeGP",
+  "tags": []
+}
