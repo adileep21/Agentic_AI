@@ -1,0 +1,461 @@
+{
+  "name": "TravelMate",
+  "nodes": [
+    {
+      "parameters": {
+        "public": true,
+        "initialMessages": "Hi there! 👋\nMy name is TravelMate. \nTell me where you'd like to travel, your dates, number of travelers, budget, and preferences.",
+        "options": {
+          "inputPlaceholder": "Tell me about your trip",
+          "subtitle": "Your AI-powered multi-agent trip planner.",
+          "title": "TravelMate ✈️",
+          "responseMode": "lastNode"
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.chatTrigger",
+      "typeVersion": 1.5,
+      "position": [
+        -1376,
+        -192
+      ],
+      "id": "84243a28-75da-42d7-b887-93337dce5ce2",
+      "name": "When chat message received",
+      "webhookId": "21651221-1141-4ea9-8c51-f471957ebaca"
+    },
+    {
+      "parameters": {
+        "model": "gemma3:1b",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOllama",
+      "typeVersion": 1,
+      "position": [
+        -1120,
+        0
+      ],
+      "id": "1fe2decb-8ed9-463e-a0ff-d22c19e912a1",
+      "name": "Ollama Chat Model",
+      "credentials": {
+        "ollamaApi": {
+          "id": "zyHj57wgJE1O4Pc6",
+          "name": "Ollama account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "options": {
+          "systemMessage": "You are a helpfuYou are Agent 1 — Trip Requirement Analyzer for TravelMate.\n\nYour job is to understand the user's travel request and extract the trip requirements.\n\nExtract:\n- origin\n- destination\n- start_date\n- end_date\n- duration_days\n- number_of_travelers\n- budget\n- currency\n- transportation_preference\n- accommodation_preference\n- interests\n- special_requirements\n\nRules:\n1. Extract information only from the user's request.\n2. Do not invent missing information.\n3. If information is not provided, use null.\n4. Calculate duration_days when the dates allow you to do so.\n5. Do not recommend hotels, transportation, restaurants, or activities.\n6. Return only the structured trip requirements as JSON."
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3.1,
+      "position": [
+        -1104,
+        -192
+      ],
+      "id": "508f1205-f738-4923-a91d-7fa52a858f52",
+      "name": "Requirement Analyzer"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "={{ $('Requirement Analyzer').item.json.output }}",
+        "options": {
+          "systemMessage": "/no_think\n\nYou are Agent 2 — Transportation Planner for TravelMate.\n\nYour job is to analyze the trip requirements provided by Agent 1 and create a transportation plan using current web information.\n\nYou have access to the Tavily Search tool.\n\nIMPORTANT:\nYou MUST use the Tavily Search tool before creating the transportation plan.\n\nUse the trip requirements from Agent 1 to dynamically construct search queries.\n\nSearch for current transportation information between the exact origin and destination for the exact travel dates.\n\nSearch for:\n- flights\n- trains\n- buses\n- approximate fares\n- travel duration\n- relevant airports or railway stations when applicable\n\nPerform additional searches when necessary to obtain useful transportation information.\n\nRules:\n1. Use the exact origin, destination and travel dates provided by Agent 1.\n2. Do not invent transportation options.\n3. Do not invent prices, schedules, flight numbers, train numbers or booking availability.\n4. Use information found through Tavily when preparing the transportation plan.\n5. Clearly distinguish verified information from estimates.\n6. If a specific piece of information cannot be verified, state \"Not found.\"\n7. Do not plan hotels, restaurants or activities.\n8. Do not modify the user's travel dates, destination or number of travelers.\n9. Keep the transportation recommendations relevant to the user's budget.\n10. Mention the source website when reporting important information.\n\nReturn structured JSON with:\n- transportation_options\n- recommended_options\n- estimated_costs\n- travel_times\n- sources\n- assumptions\n- missing_information"
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3.1,
+      "position": [
+        -752,
+        -176
+      ],
+      "id": "af73bd9f-1ac0-4aeb-b56b-a373e56025de",
+      "name": "Transportation Planner"
+    },
+    {
+      "parameters": {
+        "model": "qwen3:4b",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOllama",
+      "typeVersion": 1,
+      "position": [
+        -736,
+        0
+      ],
+      "id": "acf806ea-c2c1-4d2b-a009-2ff23aeac30c",
+      "name": "Ollama Chat Model1",
+      "credentials": {
+        "ollamaApi": {
+          "id": "zyHj57wgJE1O4Pc6",
+          "name": "Ollama account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "model": "gemma3:1b",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOllama",
+      "typeVersion": 1,
+      "position": [
+        -368,
+        16
+      ],
+      "id": "cc486068-6946-4a56-8390-6b36ebb4978d",
+      "name": "Ollama Chat Model2",
+      "credentials": {
+        "ollamaApi": {
+          "id": "zyHj57wgJE1O4Pc6",
+          "name": "Ollama account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "model": "gemma3:1b",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOllama",
+      "typeVersion": 1,
+      "position": [
+        0,
+        0
+      ],
+      "id": "080a9a4e-f408-4c66-8432-e914159eaf40",
+      "name": "Ollama Chat Model3",
+      "credentials": {
+        "ollamaApi": {
+          "id": "zyHj57wgJE1O4Pc6",
+          "name": "Ollama account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "model": "gemma3:1b",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOllama",
+      "typeVersion": 1,
+      "position": [
+        368,
+        -16
+      ],
+      "id": "15020d4e-6a7d-4327-95a5-f70274b4630f",
+      "name": "Ollama Chat Model4",
+      "credentials": {
+        "ollamaApi": {
+          "id": "zyHj57wgJE1O4Pc6",
+          "name": "Ollama account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=Trip requirements:\n{{ $('Requirement Analyzer').item.json.output }}\n\nTransportation plan:\n{{ $('Transportation Planner').item.json.output }}",
+        "options": {
+          "systemMessage": "You are Agent 3 — Accommodation & Activities Planner for TravelMate.\n\nYour job is to create an accommodation and activities plan using ONLY the information provided by the previous agents.\n\nIMPORTANT:\nYou do not have access to live hotel, attraction, map, or booking data.\n\nTherefore:\n- NEVER invent hotel names.\n- NEVER invent locations.\n- NEVER invent attractions.\n- NEVER invent opening hours.\n- NEVER invent booking availability.\n- NEVER invent exact prices.\n- NEVER claim that a hotel or activity is available.\n- If specific information is unavailable, explicitly state \"Not available without live travel data.\"\n\nFor accommodation, provide:\n- recommended area or neighborhood only if it is explicitly known from the input\n- number of nights\n- estimated nightly budget range\n- estimated total accommodation budget\n\nFor activities:\n- use only activities explicitly suggested by the user's interests or provided information\n- provide estimated costs only when clearly labeled as estimates\n- do not create specific venues unless they are provided by a data source\n\nReturn structured JSON.\n\nYour output must contain:\n- accommodation\n- activities\n- estimated_costs\n- assumptions"
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3.1,
+      "position": [
+        -352,
+        -160
+      ],
+      "id": "7dc33a17-ac85-4462-bab5-445312c5b45c",
+      "name": "Accommodation & Activities Planner"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=Trip requirements:\n{{ $('Requirement Analyzer').item.json.output }}\n\nTransportation plan:\n{{ $('Transportation Planner').item.json.output }}\n\nAccommodation & Activities plan:\n{{ $('Accommodation & Activities Planner').item.json.output }}",
+        "options": {
+          "systemMessage": "You are Agent 4 — Budget & Itinerary Optimizer for TravelMate.\n\nYour job is to combine the trip requirements, transportation plan, and accommodation/activity plan into a realistic day-by-day itinerary.\n\nYour responsibilities:\n- calculate estimated total cost\n- compare estimated cost with the user's stated budget\n- allocate the budget across transportation, accommodation, food, activities, and local transportation\n- create a day-by-day itinerary\n- organize activities according to the user's interests\n- identify missing information\n\nIMPORTANT:\nNever invent:\n- hotels\n- restaurants\n- airports\n- cities\n- attractions\n- flight numbers\n- train numbers\n- ticket prices\n- schedules\n- availability\n\nIf information is unavailable, use:\n\"Not available without live travel data.\"\n\nBudget rules:\n- Always calculate the total from the individual estimated costs.\n- Do not claim the trip is within budget unless the calculated total supports that conclusion.\n- If an exact cost is unavailable, clearly identify it as an estimate or unknown.\n- Do not silently replace missing costs with invented numbers.\n\nItinerary rules:\n- Preserve the user's actual origin and destination.\n- Preserve the requested dates.\n- Create a logical day-by-day structure.\n- Do not introduce a location that was not provided or verified.\n- Do not invent specific hotels or restaurants.\n\nReturn structured JSON containing:\n- trip_summary\n- transportation_summary\n- accommodation_summary\n- daily_itinerary\n- budget_breakdown\n- estimated_total\n- budget_status\n- missing_information\n- assumptions"
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3.1,
+      "position": [
+        0,
+        -208
+      ],
+      "id": "6a9388e3-4ecd-49f5-b5b2-423ea8fcd875",
+      "name": "Budget & Itinerary Optimizer"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "={{ $json.output }}",
+        "options": {
+          "systemMessage": "You are Agent 5 — Final Report Generator for TravelMate.\n\nTransform the itinerary information provided by Agent 4 into a detailed, polished travel report.\n\nCreate these sections:\n\n# TRAVELMATE TRIP PLAN\n\n## 1. Trip Overview\nInclude:\n- Origin\n- Destination\n- Dates\n- Duration\n- Travelers\n- Budget\n- Interests\n\n## 2. Transportation\nShow available information in a clear table.\n\n## 3. Accommodation\nShow:\n- recommended area\n- number of nights\n- estimated budget\n- important assumptions\n\nDo not invent hotel names.\n\n## 4. Day-by-Day Itinerary\nFor every day include:\n- Date\n- Morning\n- Afternoon\n- Evening\n- Estimated daily cost\n\n## 5. Activities & Attractions\n\n## 6. Budget Breakdown\nShow:\n- Transportation\n- Accommodation\n- Food\n- Activities\n- Local transport\n- Total estimated cost\n- User's budget\n- Remaining amount or amount over budget\n\n## 7. Important Assumptions\n\n## 8. Missing Information\n\nRules:\n- Do not invent information.\n- Do not invent hotels, restaurants, attractions, airports, prices, schedules, or availability.\n- Clearly label estimates.\n- Preserve the user's actual origin, destination and dates.\n- If live information is unavailable, say so.\n- Do not mention internal agents.\n- Do not output JSON.\n- Return a detailed natural-language report."
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3.1,
+      "position": [
+        384,
+        -208
+      ],
+      "id": "76aab74f-4de2-4169-8e67-03b5634a7a8e",
+      "name": "Final Report Generator"
+    },
+    {
+      "parameters": {
+        "query": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Query', `Search for current and relevant transportation options for the user's trip, including flights, trains, buses, fares, travel times, and official booking information.`, 'string') }}",
+        "options": {}
+      },
+      "type": "@tavily/n8n-nodes-tavily.tavilyTool",
+      "typeVersion": 1,
+      "position": [
+        -608,
+        32
+      ],
+      "id": "cf7674dd-e4f1-4a10-b613-a0ad64591680",
+      "name": "Search in Tavily",
+      "credentials": {
+        "tavilyApi": {
+          "id": "hFcWBjqbPN3FG0qQ",
+          "name": "Tavily account 4"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "descriptionType": "manual",
+        "toolDescription": "Extract detailed information from relevant web pages found by Tavily Search, especially official transportation websites, booking pages, and other reliable sources.",
+        "resource": "extract",
+        "options": {}
+      },
+      "type": "@tavily/n8n-nodes-tavily.tavilyTool",
+      "typeVersion": 1,
+      "position": [
+        -512,
+        128
+      ],
+      "id": "88fa4561-85c1-470d-88c3-0fa55d1533b3",
+      "name": "Extract in Tavily",
+      "credentials": {
+        "tavilyApi": {
+          "id": "hFcWBjqbPN3FG0qQ",
+          "name": "Tavily account 4"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "query": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Query', `Search for current accommodation options, hotel areas, attractions, activities, entrance fees, and relevant travel information for the user's destination and dates.`, 'string') }}",
+        "options": {}
+      },
+      "type": "@tavily/n8n-nodes-tavily.tavilyTool",
+      "typeVersion": 1,
+      "position": [
+        -208,
+        48
+      ],
+      "id": "6b21f936-712e-479b-aaa4-ee68428311c0",
+      "name": "Search in Tavily1",
+      "credentials": {
+        "tavilyApi": {
+          "id": "hFcWBjqbPN3FG0qQ",
+          "name": "Tavily account 4"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "resource": "extract",
+        "options": {}
+      },
+      "type": "@tavily/n8n-nodes-tavily.tavilyTool",
+      "typeVersion": 1,
+      "position": [
+        -112,
+        144
+      ],
+      "id": "74471099-3e2a-4fed-a365-b85b52b75df6",
+      "name": "Extract in Tavily1",
+      "credentials": {
+        "tavilyApi": {
+          "id": "hFcWBjqbPN3FG0qQ",
+          "name": "Tavily account 4"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "When chat message received": {
+      "main": [
+        [
+          {
+            "node": "Requirement Analyzer",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Ollama Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Requirement Analyzer",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Requirement Analyzer": {
+      "main": [
+        [
+          {
+            "node": "Transportation Planner",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Ollama Chat Model1": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Transportation Planner",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Transportation Planner": {
+      "main": [
+        [
+          {
+            "node": "Accommodation & Activities Planner",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Ollama Chat Model2": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Accommodation & Activities Planner",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Ollama Chat Model3": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Budget & Itinerary Optimizer",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Ollama Chat Model4": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Final Report Generator",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Accommodation & Activities Planner": {
+      "main": [
+        [
+          {
+            "node": "Budget & Itinerary Optimizer",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Budget & Itinerary Optimizer": {
+      "main": [
+        [
+          {
+            "node": "Final Report Generator",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Search in Tavily": {
+      "ai_tool": [
+        [
+          {
+            "node": "Transportation Planner",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Extract in Tavily": {
+      "ai_tool": [
+        [
+          {
+            "node": "Transportation Planner",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Search in Tavily1": {
+      "ai_tool": [
+        [
+          {
+            "node": "Accommodation & Activities Planner",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Extract in Tavily1": {
+      "ai_tool": [
+        [
+          {
+            "node": "Accommodation & Activities Planner",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate"
+  },
+  "versionId": "9072e197-57bc-4d8d-a113-43989af703c2",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "49363d16f9c2e5ced96e9a621b557a586dae2838f89a20889749dad9430d82c8"
+  },
+  "nodeGroups": [],
+  "id": "ndcLxcL3A17EBZPV",
+  "tags": []
+}
